@@ -1,19 +1,50 @@
-// Requiring module
-const express = require('express');
+// required config
 
-// Creating express object
+require("dotenv").config();
+const express = require("express");
 const app = express();
+const cors = require("cors");
+const mongoose = require("mongoose");
+const { URL } = require("./utils/config");
 
-// Handling GET request
-app.get('/', (req, res) => { 
-	res.send('A simple Node App is '
-		+ 'running on this server') 
-	res.end() 
-}) 
+// getting all routers
 
-// Port Number
-const PORT = process.env.PORT ||5000;
+const loginRouter = require("./Routes/loginRoutes");
+const studentRouter = require("./Routes/studentRoutes");
+const taskRouter = require("./Routes/taskRoutes");
+const leaveRouter = require("./Routes/leaveRoutes");
+const portfolioRouter = require("./Routes/portfolioRoutes");
+const capstoneRouter = require("./Routes/capstoneRoutes");
+const webcodeRouter = require("./Routes/webcodeRoutes");
+const queryRouter = require("./Routes/queryRoutes");
+const mockRouter = require("./Routes/mockRoutes");
 
-// Server Setup
-app.listen(PORT,console.log(
-`Server started on port ${PORT}`));
+app.use(express.json());
+app.use(cors());
+
+mongoose.set("strictQuery", false);
+
+mongoose
+  .connect(URL)
+  .then(() => {
+    console.log("connected to Mongo DB");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+app.get("/", (req, res) => {
+  res.send("Welcome to Zen-Dashboard");
+});
+
+app.use(studentRouter);
+app.use(taskRouter);
+app.use(loginRouter);
+app.use(leaveRouter);
+app.use(portfolioRouter);
+app.use(capstoneRouter);
+app.use(webcodeRouter);
+app.use(queryRouter);
+app.use(mockRouter);
+
+module.exports = app;
